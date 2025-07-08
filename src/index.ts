@@ -319,7 +319,7 @@ async function getElo(id: string) {
     return `${name} - ${translatedTiers[tier]} ${rank} ${lp} LP`;
   });
 
-  return line + elosStr.join(line);
+  return line + elosStr.join(line) + line;
 }
 
 app.get("/", async (request, reply) => {
