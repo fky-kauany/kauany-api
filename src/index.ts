@@ -235,7 +235,10 @@ async function getElo(id: string) {
 
   const puuids = r.summoners;
 
-  const line = " ────────────────────────────── ";
+  let line = " ────────────────────────────── ";
+  if (id === "korris") {
+    line = " ───────────────★────────────── ";
+  }
 
   const elos: {
     name: string;
