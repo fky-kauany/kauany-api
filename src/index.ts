@@ -235,7 +235,7 @@ async function getElo(id: string) {
 
   const puuids = r.summoners;
 
-  let line = " ────────────────────────────── ";
+  let line = " ───────────────────────────── ";
   if (id === "korris") {
     line = " ───────────────★────────────── ";
   }
