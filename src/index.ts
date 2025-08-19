@@ -4,6 +4,7 @@ import fastify from "fastify";
 import NodeCache from "node-cache";
 import z from "zod";
 import { StreamerSchema } from "./models/streamers";
+import localtunnel from "localtunnel";
 
 const envSchema = z.object({
   PORT: z
@@ -17,6 +18,7 @@ const envSchema = z.object({
     .default("5432")
     .transform((data) => parseInt(data)),
   DB_URL: z.string().min(1, "Database URL is required"),
+  LOCAL: z.string().optional().default("PRODUCTION"),
   RIOT_API: z.string().min(1, "Riot API key is required"),
 });
 
@@ -239,6 +241,9 @@ async function getElo(id: string) {
   if (id === "korris") {
     line = " ───────────────★────────────── ";
   }
+  // else if (id === "09626e58-3e80-4fe5-84b3-7d73bf0c0883") {
+  //   line = " ────────────────────────────── ";
+  // }
 
   const elos: {
     name: string;
@@ -306,6 +311,12 @@ async function getElo(id: string) {
     CHALLENGER: "Desafiante",
   };
 
+  const x = elos.find((d) => d.name.toLowerCase() === "alma negra#chap");
+
+  if (x) {
+    elos.splice(elos.indexOf(x), 1);
+  }
+
   const elosStr = elos.map(({ name, tier, rank, lp }) => {
     if (
       tier === "UNRANKED" ||
@@ -319,7 +330,13 @@ async function getElo(id: string) {
     return `${name} - ${translatedTiers[tier]} ${rank} ${lp} LP`;
   });
 
-  return line + elosStr.join(line) + line;
+  let end = "";
+
+  if (x) {
+    end = ` ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀─────────⠀𝗘𝗟𝗢⠀𝗗𝗔⠀𝗦𝗔𝗚𝗔⠀───────── ${x.name} - ${translatedTiers[x.tier]} ${x.rank} ${x.lp} LP`;
+  }
+
+  return line + elosStr.join(line) + end;
 }
 
 app.get("/", async (request, reply) => {
@@ -330,3 +347,28 @@ app.listen({
   port,
   host: "0.0.0.0",
 });
+
+// if (env.LOCAL === "TEST") {
+//   console.log("zzz1", port);
+//   (async () => {
+//     console.log("zzz2");
+//     const tunnel = await localtunnel({
+//       port,
+//     });
+
+//     // i.e. https://abcdefgjhij.localtunnel.me
+//     console.log("url", tunnel.url);
+
+//     tunnel.on("open", (tunnel) => {
+//       console.log("open", tunnel);
+//     });
+
+//     tunnel.on("error", (err) => {
+//       console.error(err);
+//     });
+
+//     tunnel.on("close", () => {
+//       // tunnels are closed
+//     });
+//   })();
+// }
